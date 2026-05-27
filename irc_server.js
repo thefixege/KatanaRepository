@@ -3,16 +3,20 @@ const app = express();
 
 app.use(express.json());
 
-// Хранилище сообщений
+app.use((req, res, next) => {
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Methods', 'GET, POST');
+    res.header('Access-Control-Allow-Headers', 'Content-Type');
+    next();
+});
+
 let messages = [];
 const MAX_MESSAGES = 100;
 
-// Получить сообщения
 app.get('/api/irc/messages', (req, res) => {
     res.json({ messages: messages.slice(-50) });
 });
 
-// Отправить сообщение
 app.post('/api/irc/send', (req, res) => {
     const { user, text } = req.body;
     
@@ -32,7 +36,8 @@ app.post('/api/irc/send', (req, res) => {
     res.json({ success: true });
 });
 
-const server = app.listen(3001, '0.0.0.0', () => {
-    console.log('Katana IRC Server started on port 3001');
-    console.log('http://localhost:3001');
+
+const port = process.env.PORT || 3001;
+app.listen(port, '0.0.0.0', () => {
+    console.log(`Katana IRC Server running on port ${port}`);
 });
